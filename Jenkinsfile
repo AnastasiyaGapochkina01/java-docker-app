@@ -18,7 +18,7 @@ pipeline {
             steps {
                 // Убираем старый контейнер, если есть
                 sh 'docker rm -f java-docker-app || true'
-                sh 'docker run -d -p 8080:8080 --name java-docker-app java-docker-app'
+                sh 'docker run -d -p 8085:8080 --name java-docker-app java-docker-app'
             }
         }
     }
