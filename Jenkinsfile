@@ -40,9 +40,12 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                // Убираем старый контейнер, если есть
-                sh 'docker rm -f "${params.APP}"-cont || true'
-                sh 'docker run -d -p "${params.EXT_PORT}":"${params.INT_PORT}" --name "${params.APP}"-cont "${REPO}":"${params.APP}"-"${BUILD_NUMBER}"'
+                script {
+                  sh """
+                    docker rm -f "${params.APP}-cont" || true
+                    docker run -d -p "${params.EXT_PORT}:${params.INT_PORT}" --name "${params.APP}-cont" "${REPO}:${params.APP}-${BUILD_NUMBER}"
+                  """
+                }
             }
         }
     }
