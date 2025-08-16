@@ -1,13 +1,13 @@
 pipeline {
     agent any
     parameters {
-        choices (name: 'APP', choices: ['java-app', 'python-app', 'ruby-app']),
-        string(name: 'EXT_PORT', defaultValue: '5000'),
+        choices (name: 'APP', choices: ['java-app', 'python-app', 'ruby-app'])
+        string(name: 'EXT_PORT', defaultValue: '5000')
         string(name: 'INT_PORT', defaultValue: '5000')
     }
 
     environment {
-        REPO = 'anestesia01/filiz-docker-apps',
+        REPO = 'anestesia01/filiz-docker-apps'
         DOCKER_TOKEN = credentials('docker_token')
     }
 
