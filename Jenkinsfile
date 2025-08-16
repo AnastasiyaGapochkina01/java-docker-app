@@ -20,15 +20,15 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ${REPO}:${params.APP}-${BUILD_ID} ./${params.APP}'
+                sh 'docker build -t "${REPO}":"${params.APP}"-"${BUILD_NUMBER}" ./"${params.APP}"'
             }
         }
 
         stage('Push Docker Image') {
             steps {
                 sh """
-                  docker login -u anestesia01 -p ${DOCKER_TOKEN}
-                  docker push ${REPO}:${params.APP}-${BUILD_ID}'
+                  docker login -u anestesia01 -p "${DOCKER_TOKEN}"
+                  docker push "${REPO}":"${params.APP}"-"${BUILD_NUMBER}"'
                 """
             }
         }
@@ -36,8 +36,8 @@ pipeline {
         stage('Run Container') {
             steps {
                 // Убираем старый контейнер, если есть
-                sh 'docker rm -f ${params.APP}-cont || true'
-                sh 'docker run -d -p ${EXT_PORT}:${INT_PORT} --name ${params.APP}-cont ${REPO}:${params.APP}-${BUILD_ID}'
+                sh 'docker rm -f "${params.APP}"-cont || true'
+                sh 'docker run -d -p "${params.EXT_PORT}":"${params.INT_PORT}" --name "${params.APP}"-cont "${REPO}":"${params.APP}"-"${BUILD_NUMBER}"'
             }
         }
     }
