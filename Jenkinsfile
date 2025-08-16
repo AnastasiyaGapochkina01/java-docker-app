@@ -33,7 +33,7 @@ pipeline {
             steps {
                 sh """
                   docker login -u anestesia01 -p "${DOCKER_TOKEN}"
-                  docker push "${REPO}":"${params.APP}"-"${BUILD_NUMBER}"'
+                  docker push "${REPO}:${params.APP}-${BUILD_NUMBER}"
                 """
             }
         }
