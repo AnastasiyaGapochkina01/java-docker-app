@@ -20,7 +20,11 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t "${REPO}":"${params.APP}"-"${BUILD_NUMBER}" ./"${params.APP}"'
+                script {
+                    sh """
+                      echo "${REPO}:${params.APP}-${BUILD_NUMBER} ./${params.APP}"
+                      docker build -t "${REPO}:${params.APP}-${BUILD_NUMBER}" ./"${params.APP}"
+                    """
             }
         }
 
