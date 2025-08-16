@@ -25,6 +25,7 @@ pipeline {
                       echo "${REPO}:${params.APP}-${BUILD_NUMBER} ./${params.APP}"
                       docker build -t "${REPO}:${params.APP}-${BUILD_NUMBER}" ./"${params.APP}"
                     """
+                }
             }
         }
 
