@@ -1,9 +1,9 @@
 pipeline {
     agent any
     parameters {
-        choices (name: 'APP', choices: ['java-app', 'python-app', 'ruby-app'])
-        string(name: 'EXT_PORT', defaultValue: '5000')
-        string(name: 'INT_PORT', defaultValue: '5000')
+        choice (name: 'APP', choices: ['java-app', 'python-app', 'ruby-app'])
+        string (name: 'EXT_PORT', defaultValue: '5000')
+        string (name: 'INT_PORT', defaultValue: '5000')
     }
 
     environment {
