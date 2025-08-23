@@ -1,5 +1,5 @@
 def GIT_URL = "git@github.com:AnastasiyaGapochkina01/example-dockerized-apps.git"
-def cmd = ['/bin/bash', '-c', "git clone --single-branch https://github.com/AnastasiyaGapochkina01/example-dockerized-apps.git > /dev/null; cd example-dockerized-apps.git; git ls-tree -r origin/main --name-only"]
+def cmd = ['/bin/bash', '-c', "git clone --single-branch https://github.com/AnastasiyaGapochkina01/example-dockerized-apps.git > /dev/null; cd example-dockerized-apps.git; git ls-tree -d origin/main --name-only"]
 def file_list = cmd.execute().text
 def projects = file_list.split('\n').collect { it }
 
@@ -20,7 +20,8 @@ node {
   stage('Build') {
     script {
       env.REPO="anestesia01/filiz-docker-apps"
-      def d_build = ['/bin/bash', '-c', "docker build -t ${REPO}-${params.APP}:${BUILD_NUMBER} ./${params.APP}"]
+      echo "Run build ${env.REPO}-${params.APP}:${BUILD_NUMBER}"
+      def d_build = ['/bin/bash', '-c', "docker build -t ${env.REPO}-${params.APP}:${BUILD_NUMBER} ./${params.APP}"]
       def run_build = d_build.execute()
     }
   }
@@ -29,8 +30,8 @@ node {
     script {
       env.REPO="anestesia01/filiz-docker-apps"
       env.DOCKER_TOKEN = credentials('docker_token')
-      def d_login = ['/bin/bash', '-c', "docker login -u anestesia01 -p ${DOCKER_TOKEN}"]
-      def d_push = ['/bin/bash', '-c', "docker push -t ${REPO}-${params.APP}:${BUILD_NUMBER}"]
+      def d_login = ['/bin/bash', '-c', "docker login -u anestesia01 -p ${env.DOCKER_TOKEN}"]
+      def d_push = ['/bin/bash', '-c', "docker push -t ${env.REPO}-${params.APP}:${BUILD_NUMBER}"]
       def run_log = d_login.execute()
       def run_push = d_push.execute()
     }
