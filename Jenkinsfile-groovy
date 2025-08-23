@@ -1,9 +1,9 @@
 def projects = []
+def GIT_URL = "git@github.com:AnastasiyaGapochkina01/example-dockerized-apps.git"
 
 node {
     stage('Prepare') {
-      def GIT_URL = "git@github.com:AnastasiyaGapochkina01/example-dockerized-apps.git"
-      projects = sh(script: 'git clone --single-branch "${GIT_URL}"; git ls-tree -d origin/main --name-only', returnStdout: true).trim().split('\n').collect { it }
+      projects = sh(script: 'git clone --single-branch git@github.com:AnastasiyaGapochkina01/example-dockerized-apps.git; git ls-tree -d origin/main --name-only', returnStdout: true).trim().split('\n').collect { it }
     }
 }
 
