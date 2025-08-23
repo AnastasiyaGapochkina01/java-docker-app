@@ -1,7 +1,6 @@
 def GIT_URL = "git@github.com:AnastasiyaGapochkina01/example-dockerized-apps.git"
-def cmd = ['/bin/bash', '-c', "git clone --single-branch https://github.com/AnastasiyaGapochkina01/example-dockerized-apps.git > /dev/null; cd example-dockerized-apps.git; git ls-tree -d origin/main --name-only"]
-def file_list = cmd.execute().text
-def projects = file_list.split('\n').collect { it }
+checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: GIT_URL]]])
+def projects = sh(script: 'ls -d */', returnStdout: true).trim().split('\n').collect { it.replaceAll("/","") }
 
 properties (
   [
@@ -13,27 +12,25 @@ properties (
 )
 
 node {
+  env.REPO = "anestesia01/filiz-docker-apps"
+  env.DOCKER_TOKEN = credentials('docker_token')
+
   stage('Checkout') {
     checkout([$class: 'GitSCM', branches: [[name: "${REVISION}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'jenkins-key', url: "${GIT_URL}"]]])
   }
 
   stage('Build') {
-    script {
-      env.REPO="anestesia01/filiz-docker-apps"
-      echo "Run build ${env.REPO}-${params.APP}:${BUILD_NUMBER}"
-      def d_build = ['/bin/bash', '-c', "docker build -t ${env.REPO}-${params.APP}:${BUILD_NUMBER} ./${params.APP}"]
-      def run_build = d_build.execute()
-    }
+      def buildStatus = sh(script: "docker build -t ${env.REPO}-${params.APP}:${BUILD_NUMBER} ./${params.APP}", returnStatus: true)
+      if (buildStatus != 0) {
+        error "Docker build failed"
+      }
   }
 
   stage('Push') {
-    script {
-      env.REPO="anestesia01/filiz-docker-apps"
-      env.DOCKER_TOKEN = credentials('docker_token')
-      def d_login = ['/bin/bash', '-c', "docker login -u anestesia01 -p ${env.DOCKER_TOKEN}"]
-      def d_push = ['/bin/bash', '-c', "docker push -t ${env.REPO}-${params.APP}:${BUILD_NUMBER}"]
-      def run_log = d_login.execute()
-      def run_push = d_push.execute()
-    }
+      sh "echo ${env.DOCKER_TOKEN} | docker login -u anestesia01 --password-stdin"
+      def pushStatus = sh(script: "docker push ${env.REPO}-${params.APP}:${BUILD_NUMBER}", returnStatus: true)
+      if (pushStatus != 0) {
+        error "Docker push failed"
+      }
   }
 }
