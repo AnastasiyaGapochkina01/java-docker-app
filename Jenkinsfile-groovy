@@ -1,6 +1,5 @@
 def GIT_URL = "git@github.com:AnastasiyaGapochkina01/example-dockerized-apps.git"
-checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: GIT_URL]]])
-def projects = sh(script: 'ls -d */', returnStdout: true).trim().split('\n').collect { it.replaceAll("/","") }
+def projects = sh(script: 'git clone --single-branch ${GIT_URL}; git ls-tree -d origin/main --name-only', returnStdout: true).trim().split('\n').collect { it }
 
 properties (
   [
