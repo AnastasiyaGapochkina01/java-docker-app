@@ -32,7 +32,7 @@ node {
   }
 
   stage('Push') {
-    sh "echo '${env.DOCKER_TOKEN}' | docker login -u anestesia01 --password-stdin"
+    sh "docker login -u anestesia01 -p '${env.DOCKER_TOKEN}'"
     def pushStatus = sh(script: "docker push ${env.REPO}-${params.APP}:${BUILD_NUMBER}", returnStatus: true)
     if (pushStatus != 0) {
       error "Docker push failed"
