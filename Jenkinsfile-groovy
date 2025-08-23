@@ -3,7 +3,7 @@ def GIT_URL = "git@github.com:AnastasiyaGapochkina01/example-dockerized-apps.git
 
 node {
     stage('Prepare') {
-      projects = sh(script: 'git clone --single-branch git@github.com:AnastasiyaGapochkina01/example-dockerized-apps.git; git ls-tree -d origin/main --name-only', returnStdout: true).trim().split('\n').collect { it }
+      projects = sh(script: 'rm -rf example-dockerized-apps.git || true; git clone --single-branch git@github.com:AnastasiyaGapochkina01/example-dockerized-apps.git; git ls-tree -d origin/main --name-only', returnStdout: true).trim().split('\n').collect { it }
     }
 }
 
