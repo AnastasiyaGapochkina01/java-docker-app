@@ -1,0 +1,35 @@
+def GIT_URL = "git@github.com:AnastasiyaGapochkina01/example-dockerized-apps.git"
+def cmd = ['/bin/bash', '-c', "git clone --single-branch https://github.com/AnastasiyaGapochkina01/example-dockerized-apps.git > /dev/null; cd example-dockerized-apps.git; git ls-tree -r origin/main --name-only"]
+def file_list = cmd.execute().text
+def projects = file_list.split('\n').collect { it }
+
+properties (
+  [
+    parameters([
+      choice(choices: projects, name: "APP"),
+      gitParameter(name: 'REVISION', type: 'PT_BRANCH', sortMode: 'DESCENDING_SMART', selectedValue: 'NONE', quickFilterEnabled: true, defaultValue: 'main')
+    ])
+    environment {
+        REPO="anestesia01/filiz-docker-apps" 
+        DOCKER_TOKEN = credentials('docker_token')
+    }
+  ]
+)
+
+node {
+  stage('Checkout') {
+    checkout([$class: 'GitSCM', branches: [[name: "${REVISION}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'jenkins-key', url: "${GIT_URL}"]]])
+  }
+
+  stage('Build') {
+    def d_build = "docker build -t ${REPO}-${params.APP}:${BUILD_NUMBER} ./${params.APP}"
+    def run_build = d_build.execute()
+  }
+
+  stage('Push') {
+    def d_login "docker login -u anestesia01 -p "${DOCKER_TOKEN}""
+    def d_push = "docker push -t ${REPO}-${params.APP}:${BUILD_NUMBER}"
+    def run_log = d_login.execute()
+    def run_push = d_push.execute()
+  }
+}
