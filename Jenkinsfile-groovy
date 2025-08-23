@@ -25,7 +25,7 @@ node {
   }
 
   stage('Build') {
-      def buildStatus = sh(script: "docker build -t ${env.REPO}-${params.APP}:${BUILD_NUMBER} ./${params.APP}", returnStatus: true)
+      def buildStatus = sh(script: "docker build -t ${env.REPO}/${params.APP}:${BUILD_NUMBER} ./${params.APP}", returnStatus: true)
       if (buildStatus != 0) {
         error "Docker build failed"
       }
@@ -34,7 +34,7 @@ node {
   stage('Push') {
     withCredentials([string(credentialsId: 'docker_token', variable: 'DOCKER_TOKEN')]) {
       sh "docker login -u anestesia01 -p ${DOCKER_TOKEN}"
-      def pushStatus = sh(script: "docker push ${env.REPO}-${params.APP}:${BUILD_NUMBER}", returnStatus: true)
+      def pushStatus = sh(script: "docker push ${env.REPO}/${params.APP}:${BUILD_NUMBER}", returnStatus: true)
       if (pushStatus != 0) {
         error "Docker push failed"
       }
